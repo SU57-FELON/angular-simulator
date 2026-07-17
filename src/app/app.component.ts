@@ -1,7 +1,7 @@
 import { FormsModule } from '@angular/forms';
 import { Collection } from '../collection';
 import { Colors } from '../enums/Color';
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import './training';
 @Component({
   selector: 'app-root',
@@ -9,7 +9,8 @@ import './training';
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
+  private timerId!: number;
   public isLoading = true;
   public liveText = '';
   public count = 0;
@@ -48,12 +49,17 @@ export class AppComponent {
     const visits = new Collection([localStorage.getItem('visitCount')]);
     console.log(colors.getAll());
     console.log(visits.getAll());
-    setInterval(() => {
-      this.currentDate = new Date().toLocaleString();
-    }, 1000);
     setTimeout(() => {
       this.isLoading = false;
     }, 2000);
+  }
+  ngOnInit() {
+    this.timerId = setInterval(() => {
+      this.currentDate = new Date().toLocaleString();
+    }, 1000);
+  }
+  ngOnDestroy(): void {
+    clearInterval(this.timerId);
   }
   private isMainColor(color: Colors): boolean {
     if (color === Colors.Red || color === Colors.Green || color === Colors.Blue) {
